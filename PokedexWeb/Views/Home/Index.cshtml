@@ -1,0 +1,141 @@
+﻿@model PokedexWeb.Helpers.PaginatedList<Pokemon>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokedex</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        .pokedex-table {
+            border-collapse: separate;
+            border-spacing: 0 12px;
+        }
+
+        .pokedex-table th {
+            border: none;
+            padding: 12px;
+            background-color: #333;
+            color: #fff;
+            font-weight: normal;
+        }
+
+        .pokedex-table td {
+            border: none;
+            padding: 12px;
+            background-color: #f2f2f2;
+        }
+
+        .pokedex-table img {
+            width: 100px;
+            height: auto;
+        }
+
+        .pokedex-table .type {
+            text-transform: capitalize;
+            font-weight: bold;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: #007bff;
+            text-decoration: none;
+            padding: 6px 12px;
+        }
+
+        .pagination .disabled a {
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+        .pagination .active a {
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pokedex</h1>
+        <div class="form-group">
+            <form id="searchForm" method="get">
+                <label for="searchId">Buscar por ID:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchId" name="id" placeholder="Ingrese el ID del Pokemon">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        <button type="button" class="btn btn-secondary" onclick="limpiarFiltro()">Limpiar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="pokedex-table">
+            <table id="pokemonTable" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Imagen</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Esta etiqueta debe estar aquí -->
+                    @foreach (var pokemon in Model.Items)
+                    {
+                        <tr>
+                            <td>@pokemon.Id.ToString().PadLeft(3, '0')</td>
+                            <td>@pokemon.Name</td>
+                            <td><img src="@pokemon.ImageUrl" alt="@pokemon.Name" /></td>
+                            <td class="type">
+                                @foreach (var type in pokemon.Types)
+                                {
+                                    @type.Name <!-- Suponiendo que "Name" es la propiedad que contiene el nombre del tipo -->
+                                    @if (type != pokemon.Types.Last())
+                                    {
+                                        <span>,</span>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                        <a class="page-link" href="?pageIndex=@(Model.PageIndex - 1)" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageIndex ? "active" : "")"><a class="page-link" href="?pageIndex=@i">@i</a></li>
+                    }
+                    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                        <a class="page-link" href="?pageIndex=@(Model.PageIndex + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-Ks1gsFTK7w/h9gkl+1r70aoxBb1JKzKRw9aBO/5P2ow=" crossorigin="anonymous"></script>
+    <script>
+        function limpiarFiltro() {
+            document.getElementById("searchId").value = ""; // Limpiar el campo de búsqueda
+            document.getElementById("searchForm").submit(); // Enviar el formulario
+        }
+    </script>
+</body>
+</html>
